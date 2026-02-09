@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BolaLive Pro v8 - Next Gen Streaming</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b0e14; }
+        .glass-card { background: rgba(22, 27, 34, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 20px; }
+        .video-ads-container { position: relative; overflow: hidden; border-radius: 1.5rem; border: 2px solid #10b981; }
+    </style>
+</head>
+<body class="text-slate-100 selection:bg-emerald-500/30">
+
+    <div class="fixed left-0 top-0 h-full w-20 hidden lg:flex flex-col items-center py-10 gap-8 bg-[#0f172a] border-r border-white/5 z-50">
+        <div class="bg-emerald-500 p-2.5 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.4)]">
+            <i data-lucide="layout-grid" class="text-white"></i>
+        </div>
+        <button onclick="switchView('home')" class="p-3 text-emerald-500"><i data-lucide="tv"></i></button>
+        <button onclick="switchView('scores')" class="p-3 text-slate-500 hover:text-white transition-all"><i data-lucide="activity"></i></button>
+        <button onclick="switchView('standings')" class="p-3 text-slate-500 hover:text-white transition-all"><i data-lucide="trophy"></i></button>
+    </div>
+
+    <main class="lg:ml-20 max-w-[1500px] mx-auto px-4 py-6">
+        
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h1 class="text-3xl font-black italic tracking-tighter">BOLALIVE <span class="text-emerald-500">PRO V8</span></h1>
+                <p class="text-xs text-slate-500 font-bold uppercase tracking-[0.2em]">Bandung Interactive Network</p>
+            </div>
+            <div class="flex items-center gap-4 bg-white/5 px-4 py-2 rounded-2xl border border-white/10">
+                <div class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></div>
+                <span class="text-[10px] font-black">1,240 ONLINE</span>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            
+            <div class="lg:col-span-3 space-y-6">
+                
+                <section class="video-ads-container glass-card p-2 group">
+                    <div class="absolute top-4 right-4 z-10 bg-black/60 px-3 py-1 rounded-full text-[10px] font-bold border border-white/10 backdrop-blur-md">
+                        ADVERTISEMENT
+                    </div>
+                    <div class="aspect-[21/9] bg-slate-900 rounded-[1.2rem] overflow-hidden relative">
+                        <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-emerald-900/40 to-black">
+                            <div class="text-center">
+                                <i data-lucide="megaphone" class="mx-auto mb-2 text-emerald-500" size="40"></i>
+                                <h3 class="text-xl font-black">PROMOSIKAN BISNIS ANDA DI SINI</h3>
+                                <p class="text-sm text-slate-400">Hubungi admin untuk pasang iklan video bergerak</p>
+                            </div>
+                        </div>
+                        </div>
+                </section>
+
+                <div id="videoContainer" class="bg-black rounded-[2.5rem] overflow-hidden border border-emerald-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.5)] relative aspect-video">
+                    <div id="playerPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center">
+                        <div class="w-20 h-20 bg-emerald-600 rounded-full flex items-center justify-center mb-4 shadow-xl cursor-pointer hover:scale-110 transition-all" onclick="loadMatch(2)">
+                            <i data-lucide="play" class="text-white fill-current ml-1" size="32"></i>
+                        </div>
+                        <p class="font-black text-slate-400 tracking-widest uppercase text-sm">Pilih Match Untuk Live Streaming</p>
+                    </div>
+                    <iframe id="mainPlayer" class="w-full h-full hidden shadow-inner" src="" allowfullscreen frameborder="0"></iframe>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="matchList">
+                    </div>
+            </div>
+
+            <div class="space-y-6">
+                <div class="glass-card rounded-[2rem] h-[500px] flex flex-col overflow-hidden shadow-2xl">
+                    <div class="p-5 border-b border-white/5 flex justify-between items-center bg-white/5">
+                        <h3 class="font-black text-xs tracking-[0.2em]">FANS CHAT</h3>
+                        <i data-lucide="message-square" size="16" class="text-emerald-500"></i>
+                    </div>
+                    <div id="chatBox" class="flex-1 p-5 overflow-y-auto space-y-4 custom-scrollbar"></div>
+                    <div class="p-4 bg-black/40">
+                        <div class="flex gap-2">
+                            <input id="chatInput" type="text" placeholder="Ketik pesan..." class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-emerald-500 transition-all">
+                            <button onclick="sendMessage()" class="bg-emerald-600 p-3 rounded-xl hover:bg-emerald-500 shadow-lg shadow-emerald-900/20">
+                                <i data-lucide="send" size="18"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const matches = [
+            { home: "Persib", away: "Persija", league: "LIGA 1 INDONESIA", time: "LIVE", embed: "https://www.youtube.com/embed/dQw4w9WgXcQ" },
+            { home: "Arsenal", away: "Man City", league: "PREMIER LEAGUE", time: "22:00", embed: "" },
+            { home: "Real Madrid", away: "Barcelona", league: "LA LIGA", time: "LIVE", embed: "https://www.youtube.com/embed/5_f-Lp-pW5g" }
+        ];
+
+        window.onload = () => {
+            lucide.createIcons();
+            renderMatches();
+            addChatMessage("Admin", "Selamat datang di BolaLive Pro V8! Nikmati streaming lancar.");
+        };
+
+        function renderMatches() {
+            const container = document.getElementById('matchList');
+            container.innerHTML = matches.map((m, i) => `
+                <div onclick="loadMatch(${i})" class="glass-card p-5 rounded-[1.5rem] hover:border-emerald-500/50 cursor-pointer transition-all flex items-center justify-between group">
+                    <div>
+                        <span class="text-[9px] font-black text-emerald-500 block mb-1">${m.league}</span>
+                        <h4 class="font-bold text-white group-hover:text-emerald-400 transition-colors">${m.home} vs ${m.away}</h4>
+                    </div>
+                    <div class="text-right">
+                        <span class="${m.time === 'LIVE' ? 'text-red-500 animate-pulse' : 'text-slate-500'} text-[10px] font-black block">${m.time}</span>
+                        <i data-lucide="play-circle" size="20" class="inline-block mt-1 text-slate-700 group-hover:text-emerald-500"></i>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function loadMatch(i) {
+            const m = matches[i];
+            if(!m.embed) return alert("Link belum tersedia!");
+            document.getElementById('playerPlaceholder').classList.add('hidden');
+            const player = document.getElementById('mainPlayer');
+            player.classList.remove('hidden');
+            player.src = m.embed;
+            window.scrollTo({ top: 200, behavior: 'smooth' });
+        }
+
+        function addChatMessage(user, text) {
+            const box = document.getElementById('chatBox');
+            const div = document.createElement('div');
+            div.className = "flex flex-col items-start";
+            div.innerHTML = `
+                <span class="text-[9px] font-bold text-slate-500 mb-1 capitalize">${user}</span>
+                <div class="bg-white/5 p-3 rounded-2xl rounded-tl-none text-xs border border-white/5">${text}</div>
+            `;
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            if(!input.value) return;
+            addChatMessage("Anda", input.value);
+            input.value = "";
+        }
+    </script>
+</body>
+</html>
